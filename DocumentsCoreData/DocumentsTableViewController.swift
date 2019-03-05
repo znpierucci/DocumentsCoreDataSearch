@@ -36,7 +36,6 @@ class DocumentsTableViewController: UIViewController, UITableViewDataSource, UIT
         definesPresentationContext = true
         
         searchController?.searchBar.delegate = self
-        
         documentsTableView.delegate = self
         documentsTableView.dataSource = self
     }
