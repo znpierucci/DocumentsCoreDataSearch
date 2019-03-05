@@ -13,7 +13,6 @@ import CoreData
 @objc(Document)
 public class Document: NSManagedObject {
     
-    //formats the date, guided by Expenses tutorial on youtube
     var modDate: Date? {
         get {
             return date as Date?
@@ -22,7 +21,6 @@ public class Document: NSManagedObject {
         }
     }
 
-    //initializer, guided by Expenses tutorial on youtube
     convenience init?(name: String?, content: String?) {
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
         
@@ -43,7 +41,6 @@ public class Document: NSManagedObject {
         
     }
     
-    //function that updates the document upon change/editing
     func update(name: String, content: String?) {
         self.name = name
         self.modDate = Date(timeIntervalSinceNow: 0)

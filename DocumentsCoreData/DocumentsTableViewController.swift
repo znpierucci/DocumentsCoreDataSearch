@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-class DocumentsTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class DocumentsTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchResultsUpdating, UISearchBarDelegate {
 
     @IBOutlet weak var documentsTableView: UITableView!
     
@@ -17,32 +17,63 @@ class DocumentsTableViewController: UIViewController, UITableViewDataSource, UIT
     
     var documents = [Document]()
     
+    var searchController: UISearchController?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         dateFormatter.dateStyle = .medium
         dateFormatter.timeStyle = .medium
         
+        searchController = UISearchController(searchResultsController: nil)
+        
+        searchController?.searchResultsUpdater = self
+        searchController?.obscuresBackgroundDuringPresentation = false
+        searchController?.searchBar.placeholder = "Search Documents"
+        
+        navigationItem.searchController = searchController
+        
+        definesPresentationContext = true
+        
+        searchController?.searchBar.delegate = self
+        
         documentsTableView.delegate = self
         documentsTableView.dataSource = self
     }
     
-    //viewWillAppear function, guided by Expenses application tutorial on youtube
     override func viewWillAppear(_ animated: Bool) {
+        fetchDocuments(searchString: "")
+    }
+    
+    func fetchDocuments(searchString: String) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
         }
         
         let managedContext = appDelegate.persistentContainer.viewContext
         let fetchRequest: NSFetchRequest<Document> = Document.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
         
+        //use predicates to check for which existing documents contain the searched characters
         do {
+            if (searchString != "") {
+                fetchRequest.predicate = NSPredicate(format: "name contains[c] %@ OR content contains[c] %@", searchString, searchString)
+            }
+            
             documents = try managedContext.fetch(fetchRequest)
+            documentsTableView.reloadData()
         } catch {
             print("Fetch could not be performed")
         }
         
-        documentsTableView.reloadData()
+        
+    }
+    
+    //What does this function do?
+    func updateSearchResults(for searchController: UISearchController) {
+        if let searchString = searchController.searchBar.text {
+            fetchDocuments(searchString: searchString)
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -80,7 +111,6 @@ class DocumentsTableViewController: UIViewController, UITableViewDataSource, UIT
         tableView.cellForRow(at: indexPath)?.isSelected = false
     }
     
-    //function to delete a document
     func delete(at indexPath: IndexPath) {
         let document = documents[indexPath.row]
         
@@ -102,7 +132,6 @@ class DocumentsTableViewController: UIViewController, UITableViewDataSource, UIT
         super.didReceiveMemoryWarning()
     }
     
-    //slide to delete from first documents project
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         
         let delete = UITableViewRowAction(style: .destructive, title: "Delete") {
@@ -113,8 +142,6 @@ class DocumentsTableViewController: UIViewController, UITableViewDataSource, UIT
         return [delete]
     }
     
-    
-    //segue for editing existing documents
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let destination = segue.destination as? DocumentsViewController,
             let seg = segue.identifier, seg == "editDocument",

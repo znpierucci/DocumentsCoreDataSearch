@@ -18,7 +18,6 @@ class DocumentsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        //fills the title, name field, and content view accordingly if the document already existed
         if let document = document {
             let name = document.name
             nameField.text = name
@@ -31,12 +30,10 @@ class DocumentsViewController: UIViewController {
         super.didReceiveMemoryWarning()
     }
  
-    //changes the title every time the document name is edited
     @IBAction func nameChanged(_ sender: Any) {
         title = nameField.text
     }
     
-    //save a document
     @IBAction func saveDocument(_ sender: Any) {
         
         guard let name = nameField.text else {
