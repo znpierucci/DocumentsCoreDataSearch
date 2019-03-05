@@ -36,6 +36,7 @@ class DocumentsTableViewController: UIViewController, UITableViewDataSource, UIT
         definesPresentationContext = true
         
         searchController?.searchBar.delegate = self
+        
         documentsTableView.delegate = self
         documentsTableView.dataSource = self
     }
@@ -68,7 +69,7 @@ class DocumentsTableViewController: UIViewController, UITableViewDataSource, UIT
         
     }
     
-    //What does this function do?
+    //Updates the search results every time a new character is typed
     func updateSearchResults(for searchController: UISearchController) {
         if let searchString = searchController.searchBar.text {
             fetchDocuments(searchString: searchString)
