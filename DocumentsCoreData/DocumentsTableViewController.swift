@@ -53,7 +53,7 @@ class DocumentsTableViewController: UIViewController, UITableViewDataSource, UIT
         let fetchRequest: NSFetchRequest<Document> = Document.fetchRequest()
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
         
-        //use predicates to check for which existing documents contain the searched characters
+        //Uses predicates to check for which existing documents contain the searched characters
         do {
             if (searchString != "") {
                 fetchRequest.predicate = NSPredicate(format: "name contains[c] %@ OR content contains[c] %@", searchString, searchString)
